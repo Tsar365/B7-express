@@ -27,6 +27,7 @@ const initDb = async () => {
             email VARCHAR(100) NOT NULL UNIQUE,
             password VARCHAR(100) NOT NULL,
             is_active BOOLEAN DEFAULT true,
+            age INT,
 
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -49,23 +50,39 @@ app.get("/", (req: Request, res: Response) => {
 });
 
 app.post("/", async (req: Request, res: Response) => {
-//   res.status(200).json({
-//     "message": "hello world" ,
-//     "author": "next level",
-//    });
-// console.log(req.body);
-// const body = req.body;
-const { name, email, password } = req.body;
-res.status(200).json({
+
+const { name, email, password, age } = req.body;
+
+try{
+
+  const result = await pool.query(
+    "INSERT INTO users (name, email, password, age) VALUES ($1, $2, $3, $4) RETURNING *",
+    [name, email, password, age]
+  );
+
+console.log(result);
+
+res.status(201).json({
     message: "hello world" ,
     author: "next level",
     // data: body,  //postman theke zeta send kra hbe
-    data:{
-        name,
-        email,
-    }
+    data:
+    // {
+    //     name,
+    //     email,
+    //     password,
+    //     age
+    // }
+    result.rows[0]  //database theke zeta return hbe
 
    });
+
+} catch (error:any) {
+res.status(500).json({
+    message: "Error inserting data into database",
+    error: error.message,
+  });
+}
 
 });
 
