@@ -40,6 +40,7 @@ const initDb = async () => {
 
 initDb();
 
+
 app.get("/", (req: Request, res: Response) => {
   // res.send("hello world");
   res.status(200).json({
@@ -47,6 +48,7 @@ app.get("/", (req: Request, res: Response) => {
     author: "next level",
   });
 });
+
 
 app.post("/api/users", async (req: Request, res: Response) => {
   const { name, email, password, age } = req.body;
@@ -79,6 +81,7 @@ app.post("/api/users", async (req: Request, res: Response) => {
   }
 });
 
+
 // For all users
 app.get("/api/users", async (req: Request, res: Response) => {
   try {
@@ -96,6 +99,7 @@ app.get("/api/users", async (req: Request, res: Response) => {
     });
   }
 });
+
 
 // For single user
 app.get("/api/user/:id", async (req: Request, res: Response) => {
@@ -125,37 +129,70 @@ app.get("/api/user/:id", async (req: Request, res: Response) => {
   }
 });
 
+
+//Update user
 app.put("/api/user/:id", async (req: Request, res: Response) => {
   const { id } = req.params;
-  const { name,  password, age, is_active } = req.body;
+  const { name, password, age, is_active } = req.body;
 
-  try{
-  const result=await pool.query(
-    "UPDATE users SET name = $1, is_active = $2, password = $3, age = $4, updated_at = CURRENT_TIMESTAMP WHERE id = $5 RETURNING *",
-    [name, is_active, password, age, id]
-  );  
+  try {
+    const result = await pool.query(
+      "UPDATE users SET name = COALESCE($1, name), is_active = COALESCE($2, is_active), password = COALESCE($3, password), age = COALESCE($4, age), updated_at = CURRENT_TIMESTAMP WHERE id = $5 RETURNING *",
+      [name, is_active, password, age, id],
+    );
 
-  if (result.rows.length === 0) {
-    return res.status(404).json({
-      success: false,
-      message: "User not found",
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+    // console.log(result);
+    res.status(200).json({
+      success: true,
+      message: "User updated successfully",
+      data: result.rows[0],
     });
-  }
-  // console.log(result);
-  res.status(200).json({
-    success: true,
-    message: "User updated successfully",
-    data: result.rows[0],
-  });
-  } catch (error: any) {  
+  } catch (error: any) {
     res.status(500).json({
       success: false,
       message: "Error updating user",
       error: error.message,
     });
   }
-
 });
+
+
+// delete user
+app.delete("/api/user/:id", async (req: Request, res: Response) => {
+  const { id } = req.params;
+  try {
+    const result = await pool.query(
+      "DELETE FROM users WHERE id = $1 RETURNING *",
+      [id],
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "User deleted successfully",
+      data: result.rows[0],
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: "Error deleting user",
+      error: error.message,
+    });
+  }
+});
+
 
 app.listen(port, () => {
   console.log(`listening on port ${port}`);
