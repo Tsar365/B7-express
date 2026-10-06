@@ -6,6 +6,7 @@ import express, {
 } from "express";
 
 import { initDb, pool } from "./db";
+import { userRoute } from "./modules/user/user.route";
 
 
 const app: Application = express();
@@ -16,7 +17,7 @@ app.use(express.urlencoded({ extended: true })); //req er age use krte hbe
 app.use(express.text()); //req er age use krte hbe
 
 
-
+app.use("/api/users", userRoute);  // /api/users e hit krle userRoute e jabe
 
 
 
@@ -28,37 +29,6 @@ app.get("/", (req: Request, res: Response) => {
   });
 });
 
-// create users
-app.post("/api/users", async (req: Request, res: Response) => {
-  const { name, email, password, age } = req.body;
-  try {
-    const result = await pool.query(
-      "INSERT INTO users (name, email, password, age) VALUES ($1, $2, $3, $4) RETURNING *",
-      [name, email, password, age],
-    );
-    console.log(result);
-    res.status(201).json({
-      success: true,
-      message: "User created successfully",
-      author: "next level",
-      // data: body,  //postman theke zeta send kra hbe
-      data:
-        // {
-        //     name,
-        //     email,
-        //     password,
-        //     age
-        // }
-        result.rows[0], //database theke zeta return hbe
-    });
-  } catch (error: any) {
-    res.status(500).json({
-      success: false,
-      message: "Error inserting data into database",
-      error: error.message,
-    });
-  }
-});
 
 
 // For all users
