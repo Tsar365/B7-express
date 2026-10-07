@@ -7,16 +7,16 @@ try{
 
 const result =await authService.loginUserIntoDB(req.body)
 
-  res.status(201).json({
-        success:true,
-        message: "profile craeted successful!",
-        data: result,
-  });
+res.status(200).json({
+      success: true,
+      message: "Login successful!",
+      data: result,
+    });
 
 } catch(error:any){
-      res.status(500).json({
+     res.status(500).json({
       success: false,
-      message: "Error inserting data into database",
+      message: "Error logging in",
       error: error.message,
     });
 }
