@@ -3,7 +3,6 @@ import config from "../config";
 
 export const pool = new Pool({
   connectionString: config.connection_string,
-    
 });
 
 export const initDb = async () => {
@@ -21,6 +20,21 @@ export const initDb = async () => {
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
           )
           `);
+
+    await pool.query(`
+            CREATE TABLE IF NOT EXISTS profiles(
+            id SERIAL PRIMARY KEY,
+            user_id INT UNIQUE REFERENCES users(id) ON DELETE CASCADE,
+
+            bio TEXT,
+            address TEXT,
+            phone VARCHAR(15),
+            gender VARCHAR(10),
+
+           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+            `);
     console.log("Database connected and table created successfully");
   } catch (error) {
     console.error("Error connecting to database:", error);
