@@ -5,9 +5,10 @@ import express, {
   type Response,
 } from "express";
 
-import { initDb, pool } from "./db";
+import {  pool } from "./db";
 import { userRoute } from "./modules/user/user.route";
 import { profileRoute } from "./modules/profile/profile.route";
+import { authRoute } from "./modules/auth/auth.route";
 
 const app: Application = express();
 // const port = config.port || 5000;
@@ -21,6 +22,8 @@ app.use("/api/users", userRoute); // /api/users e hit krle userRoute e jabe
 
 // For users route
 app.use("/api/profile", profileRoute)
+
+app.use("/api/auth",authRoute)
 
 app.get("/", (req: Request, res: Response) => {
   // res.send("hello world");
