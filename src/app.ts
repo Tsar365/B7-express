@@ -18,6 +18,8 @@ app.use(express.text()); //req er age use krte hbe
 
 // POST, GET, Delete & UPDATE
 app.use("/api/users", userRoute); // /api/users e hit krle userRoute e jabe
+
+// For users route
 app.use("/api/profile", profileRoute)
 
 app.get("/", (req: Request, res: Response) => {
