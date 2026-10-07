@@ -7,6 +7,7 @@ import express, {
 
 import { initDb, pool } from "./db";
 import { userRoute } from "./modules/user/user.route";
+import { profileRoute } from "./modules/profile/profile.route";
 
 const app: Application = express();
 // const port = config.port || 5000;
@@ -17,6 +18,7 @@ app.use(express.text()); //req er age use krte hbe
 
 // POST, GET, Delete & UPDATE
 app.use("/api/users", userRoute); // /api/users e hit krle userRoute e jabe
+app.use("/api/profile", profileRoute)
 
 app.get("/", (req: Request, res: Response) => {
   // res.send("hello world");
