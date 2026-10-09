@@ -5,15 +5,19 @@
 import { Router, type Request, type Response } from "express";
 
 import { userController } from "./user.controller";
-import { pool } from "../../db";
+import auth from "../../middleware/auth";
+// import { pool } from "../../db";
 
 const router=Router();
+
+
+
 
 // create users
 router.post("/", userController.createUser);  //userController.createUser e pathay dibe
 
 // get all users
-router.get("/", userController.getAllUsers);
+router.get("/",auth(), userController.getAllUsers);
 
 // get single user
 router.get("/:id", userController.getSingleUser);
